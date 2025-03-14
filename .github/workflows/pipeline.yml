@@ -22,4 +22,4 @@ jobs:
       - name: Deploy to Lambda
         run: |
           zip -r function.zip .
-          aws lambda update-function-code --function-name authentication-lambda --zip-file fileb://function.zip
+          aws lambda update-function-code --function-name authentication-lambda-AuthenticationFunction-g3Ln2Ejcs9Nk --zip-file fileb://function.zip
