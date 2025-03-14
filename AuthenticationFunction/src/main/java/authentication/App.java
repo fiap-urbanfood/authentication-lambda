@@ -80,7 +80,7 @@ public class App implements RequestHandler<APIGatewayProxyRequestEvent, APIGatew
 
                 objResponse.put("email", email);
                 objResponse.put("isVisiting", cpf == null ? true : false);
-
+                objResponse.put("teste", "pipeline ok");
 
                 strResponse = objResponse.toString();
             }
