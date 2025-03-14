@@ -45,11 +45,11 @@ jobs:
       # 5. Build do projeto com SAM
       - name: Build with SAM
         run: |
-          sam build --template-file ../template.yml
+          sam build --template-file ../template.yaml
         working-directory: AuthenticationFunction
 
       # 6. Deploy para a AWS Lambda
       - name: Deploy Lambda
         run: |
-          sam deploy --template-file ../template.yml --no-confirm-changeset --stack-name authentication-lambda --capabilities CAPABILITY_IAM
+          sam deploy --template-file ../template.yaml --no-confirm-changeset --stack-name authentication-lambda --capabilities CAPABILITY_IAM
         working-directory: AuthenticationFunction
