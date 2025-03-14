@@ -50,4 +50,4 @@ jobs:
       # 6. Deploy para a AWS Lambda
       - name: Deploy Lambda
         run: |
-          sam deploy --template-file template.yaml --no-confirm-changeset
+          sam deploy --template-file template.yaml --yes-confirm-changeset
