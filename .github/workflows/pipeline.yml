@@ -6,9 +6,16 @@ on:
       - main
 
 jobs:
+  unit-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - run: mvn test
   deploy:
     runs-on: ubuntu-latest
-
+    needs: unit-test
     steps:
       # 1. Checkout do código
       - name: Checkout code
