@@ -35,8 +35,8 @@ jobs:
           else
             echo "AWS SAM CLI já está instalado. Pulando instalação."
           fi
-      - name: Move template.yml
-        run: mv ../template.yml template.yaml
+      - name: Move template.yaml
+        run: mv ../template.yaml template.yaml
         working-directory: AuthenticationFunction
       # 5. Build do projeto com SAM
       - name: Build with SAM
