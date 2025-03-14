@@ -8,10 +8,13 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
+      # 1. Checkout do código
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # 2. Configurar credenciais da AWS
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
@@ -19,7 +22,29 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      - name: Deploy to Lambda
+      # 3. Instalar o AWS SAM CLI
+      - name: Install AWS SAM CLI
         run: |
-          zip -r function.zip .
-          aws lambda update-function-code --function-name authentication-lambda-AuthenticationFunction-g3Ln2Ejcs9Nk --zip-file fileb://function.zip
+          sudo apt-get update
+          sudo apt-get install -y unzip
+          curl -Lo sam-installation.zip https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip
+          unzip sam-installation.zip -d sam-installation
+          sudo ./sam-installation/install
+
+      # 4. Instalar dependências do projeto (se necessário)
+      - name: Install dependencies
+        run: |
+          cd AuthenticationFunction
+          mvn clean install
+          
+      # 5. Build do projeto com SAM
+      - name: Build with SAM
+        run: |
+          cd AuthenticationFunction
+          sam build
+
+      # 6. Deploy para a AWS Lambda
+      - name: Deploy Lambda
+        run: |
+          cd AuthenticationFunction
+          sam deploy --no-confirm-changeset --stack-name authentication-lambda --capabilities CAPABILITY_IAM
