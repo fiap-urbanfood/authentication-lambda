@@ -12,6 +12,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import authentication.util.StringAndJsonConverter;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Handler for requests to Lambda function.
@@ -25,16 +28,18 @@ public class App implements RequestHandler<APIGatewayProxyRequestEvent, APIGatew
 
         APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent()
                 .withHeaders(headers);
-        try {
-            String token = generateToken(input);
 
-            if(token==null){
+
+        try {
+            String checkClient = checkClient(input);
+
+            if(checkClient==null){
                 return response
                         .withBody("{}")
                         .withStatusCode(422);
             }
 
-            String output = String.format("{ \"token\": \"%s\" }", token);
+            String output = String.format("{ \"result\": %s }", checkClient);
 
             return response
                     .withStatusCode(200)
@@ -46,32 +51,41 @@ public class App implements RequestHandler<APIGatewayProxyRequestEvent, APIGatew
         }
     }
 
-    private String generateToken(APIGatewayProxyRequestEvent input){
+    private String checkClient(APIGatewayProxyRequestEvent input){
         String user = null;
         String cpf = null;
         String email = null;
 
-        String token = null;
+        String strResponse = null;
         try{
             if(input.getBody() != null){
-                String secretKey = "your-secret-key";
                 JsonNode body = StringAndJsonConverter.stringToJson(input.getBody());
 
                 user = body.get("user").asText();
-                cpf = body.get("cpf").asText();
+
+                try {
+                    cpf = body.get("cpf").asText();
+                }catch (Exception e){
+                    cpf = null;
+                }
                 email = body.get("email").asText();
 
-                token = Jwts.builder()
-                        .setSubject(cpf)
-                        .claim("user", user)
-                        .claim("email", email)
-                        .setIssuedAt(new Date())
-                        .setExpiration(new Date(System.currentTimeMillis() + 3600000)) // 1 hora
-                        .signWith(SignatureAlgorithm.HS256, secretKey)
-                        .compact();
+                JSONObject objResponse = new JSONObject();
+
+                objResponse.put("user", user);
+                if(cpf!=null){
+                    objResponse.put("cpf", cpf);
+                    //function select cpf no rds
+                }
+
+                objResponse.put("email", email);
+                objResponse.put("isVisiting", cpf == null ? true : false);
+
+
+                strResponse = objResponse.toString();
             }
 
-            return token;
+            return strResponse;
         }catch (Exception e){
             System.out.println(e.getMessage());
             return null;
