@@ -20,7 +20,7 @@ Resources:
       Runtime: java17
       VpcConfig:
         SecurityGroupIds:
-          - sg-0b2f46269997949e5
+          - sg-01f98118f761a3ec0
         SubnetIds:
           - subnet-6a38f00c
           - subnet-1bdec125
