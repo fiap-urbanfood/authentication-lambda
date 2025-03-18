@@ -18,6 +18,17 @@ Resources:
       CodeUri: AuthenticationFunction
       Handler: authentication.App::handleRequest
       Runtime: java17
+      Role: arn:aws:iam::857378965163:role/lambda-access-vpc
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-0b2f46269997949e5
+        SubnetIds:
+          - subnet-6a38f00c
+          - subnet-1bdec125
+          - subnet-6099022d
+          - subnet-97fc2ab6
+          - subnet-90b064cf
+          - subnet-c4c64bca
       Architectures:
         - x86_64
       MemorySize: 512
