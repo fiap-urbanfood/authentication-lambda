@@ -18,7 +18,6 @@ Resources:
       CodeUri: AuthenticationFunction
       Handler: authentication.App::handleRequest
       Runtime: java17
-      Role: arn:aws:iam::857378965163:role/lambda-access-vpc
       VpcConfig:
         SecurityGroupIds:
           - sg-0b2f46269997949e5
