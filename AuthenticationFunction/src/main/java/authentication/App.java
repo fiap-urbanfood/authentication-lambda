@@ -21,7 +21,7 @@ import redis.clients.jedis.Jedis;
  */
 public class App implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
-    private final String redisHost = "redis";
+    private final String redisHost = "redis-cluster.vaggjt.0001.use1.cache.amazonaws.com";
     private final int redisPort = 6379;
     
     public APIGatewayProxyResponseEvent handleRequest(final APIGatewayProxyRequestEvent input, final Context context) {
