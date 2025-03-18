@@ -10,17 +10,20 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.fasterxml.jackson.databind.JsonNode;
 import authentication.util.StringAndJsonConverter;
+import org.json.JSONObject;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import redis.clients.jedis.Jedis;
+
 
 /**
  * Handler for requests to Lambda function.
  */
 public class App implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
+    private final String redisHost = "redis-cluster.vaggjt.0001.use1.cache.amazonaws.com";
+    private final int redisPort = 6379;
+    
     public APIGatewayProxyResponseEvent handleRequest(final APIGatewayProxyRequestEvent input, final Context context) {
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
@@ -57,15 +60,14 @@ public class App implements RequestHandler<APIGatewayProxyRequestEvent, APIGatew
         String email = null;
 
         String strResponse = null;
-        try{
-            if(input.getBody() != null){
+        try (Jedis jedis = new Jedis(redisHost, redisPort)) { // Conexão com o Redis
+            if (input.getBody() != null) {
                 JsonNode body = StringAndJsonConverter.stringToJson(input.getBody());
-
                 user = body.get("user").asText();
-
+                String token = input.getHeaders().get("Authorization");
                 try {
                     cpf = body.get("cpf").asText();
-                }catch (Exception e){
+                } catch (Exception e) {
                     cpf = null;
                 }
                 email = body.get("email").asText();
@@ -73,20 +75,34 @@ public class App implements RequestHandler<APIGatewayProxyRequestEvent, APIGatew
                 JSONObject objResponse = new JSONObject();
 
                 objResponse.put("user", user);
-                if(cpf!=null){
+                objResponse.put("email", email);
+                objResponse.put("isVisiting", cpf == null);
+                objResponse.put("jwt", token);
+
+
+                if (cpf != null) {
                     objResponse.put("cpf", cpf);
-                    //function select cpf no rds
+
+                    // Consultar ou salvar CPF no Redis
+                    String redisKey = "login:" + cpf;
+                    if (jedis.exists(redisKey)) {
+                        objResponse.put("message", "CPF already exists in Redis");
+                    } else {
+                        jedis.set(redisKey, objResponse.toString());
+                        jedis.expire(redisKey, 3200);
+                        objResponse.put("message", "CPF saved in Redis");
+                    }
                 }
 
-                objResponse.put("email", email);
-                objResponse.put("isVisiting", cpf == null ? true : false);
+
+
 
                 strResponse = objResponse.toString();
             }
 
             return strResponse;
-        }catch (Exception e){
-            System.out.println(e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Error interacting with Redis: " + e.getMessage());
             return null;
         }
     }
