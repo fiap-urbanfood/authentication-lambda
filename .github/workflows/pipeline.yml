@@ -6,6 +6,14 @@ on:
     branches:
       - main
 
+env:
+  AWS_REGION: us-east-1                  
+  LAMBDA_NAME: authentication-lambda 
+
+permissions:
+      id-token: write
+      contents: read
+
 jobs:
   unit-test:
     runs-on: ubuntu-latest
@@ -57,7 +65,7 @@ jobs:
           else
             echo "AWS SAM CLI já está instalado. Pulando instalação."
           fi
-      
+
       # 5. Build do projeto com SAM
       - name: Build with SAM
         run: sam build
