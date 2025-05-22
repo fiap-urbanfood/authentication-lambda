@@ -16,7 +16,8 @@ jobs:
       - run: |
           cd AuthenticationFunction
           mvn test
-  sonar:
+  sonarqube:
+    name: SonarQube
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -29,7 +30,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
   deploy:
     runs-on: ubuntu-latest
-    needs: [unit-test, sonar]
+    needs: [unit-test, sonarqube]
     steps:
       # 1. Checkout do código
       - name: Checkout code
