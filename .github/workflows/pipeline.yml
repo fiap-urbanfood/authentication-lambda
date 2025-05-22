@@ -1,3 +1,4 @@
+---
 name: Devops Lambda
 
 on:
@@ -9,7 +10,8 @@ jobs:
   unit-test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout Code
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - run: |
@@ -19,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: SonarQube  Scan
@@ -32,15 +34,15 @@ jobs:
     steps:
       # 1. Checkout do código
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # 2. Configurar credenciais da AWS
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v3
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
+          audience: sts.amazonaws.com
+          role-to-assume: arn:aws:iam::857378965163:role/github-actions
 
       # 3. Instalar o AWS SAM CLI
       - name: Install AWS SAM CLI
