@@ -65,5 +65,5 @@ jobs:
       # 5. Deploy para a AWS Lambda
       - name: Deploy Lambda
         # run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --region $AWS_REGION
-        run: sam deploy --guided
+        run: sam deploy --no-confirm-changeset
 
