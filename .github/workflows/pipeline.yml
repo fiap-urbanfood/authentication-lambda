@@ -8,7 +8,6 @@ on:
 
 env:
   AWS_REGION: us-east-1
-  S3_BUCKET_DEPLOY: authentication-lambda-aws-sam
 
 permissions:
       id-token: write
@@ -65,5 +64,6 @@ jobs:
         
       # 5. Deploy para a AWS Lambda
       - name: Deploy Lambda
-        run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --region $AWS_REGION
+        # run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --region $AWS_REGION
+        run: sam deploy --guided --region $AWS_REGION
 
