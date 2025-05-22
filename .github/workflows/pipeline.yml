@@ -54,7 +54,10 @@ jobs:
 
       # 3. Instalar o AWS SAM CLI
       - name: Install AWS SAM CLI
-        uses: aws-actions/setup-sam@v1
+        uses: aws-actions/setup-sam@v2
+        with:
+          version: 1.138.0
+          use-installer: true
 
       # 4. Build do projeto com SAM
       - name: Build with SAM
