@@ -7,8 +7,8 @@ on:
       - main
 
 env:
-  AWS_REGION: us-east-1                  
-  LAMBDA_NAME: authentication-lambda 
+  AWS_REGION: us-east-1
+  S3_BUCKET_DEPLOY: authentication-lambda-aws-sam
 
 permissions:
       id-token: write
@@ -54,22 +54,13 @@ jobs:
 
       # 3. Instalar o AWS SAM CLI
       - name: Install AWS SAM CLI
-        run: |
-          if ! command -v sam &> /dev/null; then
-            echo "AWS SAM CLI não encontrado. Instalando..."
-            sudo apt-get update
-            sudo apt-get install -y unzip
-            curl -Lo sam-installation.zip https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip
-            unzip sam-installation.zip -d sam-installation
-            sudo ./sam-installation/install
-          else
-            echo "AWS SAM CLI já está instalado. Pulando instalação."
-          fi
+        uses: aws-actions/setup-sam@v1
 
-      # 5. Build do projeto com SAM
+      # 4. Build do projeto com SAM
       - name: Build with SAM
-        run: sam build
+        run: sam build --use-container
         
-      # 6. Deploy para a AWS Lambda
+      # 5. Deploy para a AWS Lambda
       - name: Deploy Lambda
-        run: sam deploy --no-confirm-changeset
+        run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --region $AWS_REGION --s3-bucket $S3_BUCKET_DEPLOY
+
