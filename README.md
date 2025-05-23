@@ -1,4 +1,24 @@
-# authentication-lambda
+## Infrastructure Documentation.
+
+![DAP Project - MicroService](DAP-URBAN_FOOD-MicroService.png)
+
+# ###########################################################
+# 💻 Deploy via Github Actions
+
+### RUN to CI/CD
+
+Pipeline Stages:
+
+1.1 Application Build:
+![CI/CD - BUILD](devops/CICD/CICD-Authentication-build.png)
+
+1.2 Sonar for continuous code quality analysis and monitoring.
+![CI/CD - SONAR](devops/CICD/CICD-Authentication-sonar.png)
+
+1.3 Deploy CloudFormation.
+![CI/CD - CloudFormation](devops/CICD/CICD-Authentication-CloudFormation.png)
+
+## authentication-lambda
 
 This project contains source code and supporting files for a serverless application that you can deploy with the SAM CLI. It includes the following files and folders.
 
