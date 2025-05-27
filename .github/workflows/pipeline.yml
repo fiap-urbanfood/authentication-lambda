@@ -23,6 +23,7 @@ jobs:
       - run: |
           cd AuthenticationFunction
           mvn test
+
   sonarqube:
     name: SonarQube
     runs-on: ubuntu-latest
@@ -35,40 +36,36 @@ jobs:
         uses: SonarSource/sonarqube-scan-action@v5
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
   deploy:
     runs-on: ubuntu-latest
     needs: [unit-test, sonarqube]
     steps:
       # 1. Checkout do código
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # 2. Configurar credenciais da AWS
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v3
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
+          audience: sts.amazonaws.com
+          role-to-assume: arn:aws:iam::857378965163:role/github-actions
 
       # 3. Instalar o AWS SAM CLI
       - name: Install AWS SAM CLI
-        run: |
-          if ! command -v sam &> /dev/null; then
-            echo "AWS SAM CLI não encontrado. Instalando..."
-            sudo apt-get update
-            sudo apt-get install -y unzip
-            curl -Lo sam-installation.zip https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip
-            unzip sam-installation.zip -d sam-installation
-            sudo ./sam-installation/install
-          else
-            echo "AWS SAM CLI já está instalado. Pulando instalação."
-          fi
-      
-      # 5. Build do projeto com SAM
+        uses: aws-actions/setup-sam@v2
+        with:
+          version: 1.138.0
+          use-installer: true
+
+      # 4. Build do projeto com SAM
       - name: Build with SAM
-        run: sam build
+        run: sam build --use-container
         
-      # 6. Deploy para a AWS Lambda
+      # 5. Deploy para a AWS Lambda
       - name: Deploy Lambda
+        # run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --region $AWS_REGION
         run: sam deploy --no-confirm-changeset
+
